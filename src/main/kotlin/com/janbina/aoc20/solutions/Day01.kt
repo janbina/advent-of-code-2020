@@ -1,14 +1,15 @@
 package com.janbina.aoc20.solutions
 
 import com.janbina.aoc20.utils.Input
+import com.janbina.aoc20.utils.printAndTest
 import com.janbina.aoc20.utils.uniquePairs
 import com.janbina.aoc20.utils.uniqueTriples
 
 fun main() {
     val input = Input.getDayInputLines(1)
     Day01(input).also {
-        println(it.part1())
-        println(it.part2())
+        printAndTest(it.part1(), 955584)
+        printAndTest(it.part2(), 287503934)
     }
 }
 

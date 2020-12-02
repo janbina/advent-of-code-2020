@@ -46,3 +46,8 @@ fun <T, R> MutableMap<T, R>.copyOf(): MutableMap<T, R> {
 fun <T> MutableList<T>.copyOf(): MutableList<T> {
     return mutableListOf<T>().also { it.addAll(this) }
 }
+
+fun <T> printAndTest(value: T, expected: T) {
+    println(value)
+    require(value == expected)
+}
