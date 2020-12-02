@@ -13,6 +13,8 @@ fun main() {
 
 class Day02(inputLines: List<String>) {
 
+    private val passRegex = Regex("(\\d+)-(\\d+) ([a-z]): ([a-z]+)")
+
     private val input = inputLines.map {
         lineToEntry(it)
     }
@@ -32,17 +34,15 @@ class Day02(inputLines: List<String>) {
     }
 
     private fun lineToEntry(line: String): PasswordEntry {
-        val parts = line.split(":").map { it.trim() }
-        val pass = parts[1]
-        val char = parts[0].last()
-        val nums = parts[0].takeWhile { it != ' ' }.split("-").map { it.toInt() }
+        val matches = passRegex.find(line) ?: throw IllegalArgumentException("Invalid input line: \"$line\"")
+        val (min, max, char, pass) = matches.destructured
 
         return PasswordEntry(
             pass = pass,
             policy = PasswordPolicy(
-                char = char,
-                min = nums[0],
-                max = nums[1],
+                char = char.first(),
+                min = min.toInt(),
+                max = max.toInt(),
             )
         )
     }
