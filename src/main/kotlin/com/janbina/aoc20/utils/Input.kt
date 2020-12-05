@@ -3,6 +3,10 @@ package com.janbina.aoc20.utils
 import java.io.File
 
 object Input {
+    fun getDayInputText(day: Int): String {
+        return getDayInputFile(day).readText()
+    }
+
     fun getDayInputLines(day: Int): List<String> {
         return getDayInputFile(day).readLines()
     }
