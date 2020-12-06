@@ -31,7 +31,7 @@ class Day03(
             1 to 2,
         ).map {
             checkSlope(it.first, it.second)
-        }.fold(1L) { acc, x -> acc * x }
+        }.reduce { a, b -> a * b }
     }
 
     private fun checkSlope(dx: Int, dy: Int): Long {
