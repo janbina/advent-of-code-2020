@@ -86,20 +86,15 @@ class Day07(input: List<String>) {
         val contains: List<Pair<Int, Bag>>
     ) {
         companion object {
+            private val linePattern = """(\w+ \w+) bags contain (.*)""".toRegex()
+            private val itemPattern = """(\d+) (\w+ \w+) bags?""".toRegex()
+
             fun fromString(line: String): Bag {
-                val name = line.substringBefore(" bag")
-                val rest = line.substringAfter("contain ")
-                val contains = if (rest.contains("no other")) {
-                    emptyList()
-                } else {
-                    rest.split(",")
-                        .map {
-                            val numName = it.substringBefore(" bag").trim()
-                            val num = numName.takeWhile { it.isDigit() }.toInt()
-                            val nm = numName.substringAfter(" ")
-                            num to Bag(nm, emptyList())
-                        }
-                }
+                val (name, rest) = linePattern.matchEntire(line)!!.destructured
+                val contains = itemPattern.findAll(rest).map { match ->
+                    val (c, n) = match.destructured
+                    c.toInt() to Bag(n, emptyList())
+                }.toList()
                 return Bag(name, contains)
             }
         }
