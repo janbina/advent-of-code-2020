@@ -13,74 +13,73 @@ fun main() {
 
 class Day07(input: List<String>) {
 
-    private val bags = input.map {
-        createBag(it)
-    }.associate { it.name to it.contains }
-
-    private val trees = mutableMapOf<String, Bag>()
-    private val roots = mutableSetOf<String>()
+    private val myBagName = "shiny gold"
+    private val trees: Map<String, Bag>
 
     init {
+        val mutTrees = mutableMapOf<String, Bag>()
+
+        val bags = input.map {
+            createBag(it)
+        }.associate { it.name to it.contains }
+
         fun buildTree(name: String): Bag {
-            val t = trees[name]
-            if (t != null) return t
-            val subtrees = bags[name]?.map {
-                val tx = buildTree(it.second.name)
-                roots.remove(it.second.name)
-                it.first to tx
-            } ?: emptyList()
-            val tree = Bag(name, subtrees)
-            trees[name] = tree
-            roots.add(name)
-            return tree
+            return mutTrees.getOrPut(name) {
+                val subtrees = bags[name]?.map {
+                    val tree = buildTree(it.second.name)
+                    it.first to tree
+                } ?: emptyList()
+                Bag(name, subtrees)
+            }
         }
 
-        bags.forEach { name, _ ->
+        bags.forEach { (name, _) ->
             buildTree(name)
         }
+
+        trees = mutTrees
     }
 
     fun part1(): Int {
         val cache = mutableMapOf<String, Boolean>()
-        fun Bag.canHold(name: String): Boolean {
-            val c = cache[this.name]
-            if (c != null) return c
-            val r = this.contains.any { it.second.name == name || it.second.canHold(name) }
-            cache[this.name] = r
-            return r
+
+        fun Bag.canHold(what: String): Boolean {
+            return cache.getOrPut(name) {
+                contains.any { it.second.name == what || it.second.canHold(what) }
+            }
         }
 
         return trees.count { (_, bag) ->
-            bag.canHold("shiny gold")
+            bag.canHold(myBagName)
         }
     }
 
     fun part2(): Int {
         val cache = mutableMapOf<String, Int>()
+
         fun Bag.numContains(): Int {
-            val c = cache[this.name]
-            if (c != null) return c
-            val r = this.contains.sumBy {
-                it.first * (it.second.numContains() + 1)
+            return cache.getOrPut(name) {
+                contains.sumBy {
+                    it.first * (it.second.numContains() + 1)
+                }
             }
-            cache[this.name] = r
-            return r
         }
 
-        return trees["shiny gold"]!!.numContains()
+        return trees[myBagName]?.numContains() ?: error("There's no bag named \"$myBagName\"")
     }
 
     private fun createBag(line: String): Bag {
         val name = line.substringBefore(" bag")
         val rest = line.substringAfter("contain ")
-        val contains = mutableListOf<Pair<Int, Bag>>()
-        if (!rest.contains("no other")) {
+        val contains = if (rest.contains("no other")) {
+            emptyList()
+        } else {
             rest.split(",")
-                .map { it.substringBefore(" bag").trim() }
-                .forEach {
-                    val num = it.takeWhile { it.isDigit() }.toInt()
-                    val nm = it.dropWhile { it.isLetter().not() }
-                    contains.add(num to Bag(nm, emptyList()))
+                .map {
+                    val numName = it.substringBefore(" bag").trim()
+                    val num = numName.takeWhile { it.isDigit() }.toInt()
+                    val nm = numName.substringAfter(" ")
+                    num to Bag(nm, emptyList())
                 }
         }
         return Bag(name, contains)
