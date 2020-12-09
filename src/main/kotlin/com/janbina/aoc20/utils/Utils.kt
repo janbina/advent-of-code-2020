@@ -47,6 +47,18 @@ fun <T> MutableList<T>.copyOf(): MutableList<T> {
     return mutableListOf<T>().also { it.addAll(this) }
 }
 
+fun <T : Comparable<T>> Iterable<T>.min(): T {
+    return requireNotNull(minOrNull()) { "No min value" }
+}
+
+fun <T : Comparable<T>> Iterable<T>.max(): T {
+    return requireNotNull(maxOrNull()) { "No max value" }
+}
+
+fun <T : Comparable<T>> Iterable<T>.minMax(): List<T> {
+    return listOf(min(), max())
+}
+
 fun <T> printAndTest(value: T, expected: T) {
     println(value)
     require(value == expected)
