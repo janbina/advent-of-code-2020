@@ -59,6 +59,14 @@ fun <T : Comparable<T>> Iterable<T>.minMax(): List<T> {
     return listOf(min(), max())
 }
 
+inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
+    var sum: Long = 0
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
+
 fun <T> printAndTest(value: T, expected: T) {
     println(value)
     require(value == expected)
