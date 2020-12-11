@@ -71,3 +71,39 @@ fun <T> printAndTest(value: T, expected: T) {
     println(value)
     require(value == expected)
 }
+
+fun <T> Array<Array<T>>.getOrNull(i: Int, j: Int): T? {
+    return getOrNull(i)?.getOrNull(j)
+}
+
+fun <T> Array<Array<T>>.getOrNull(p: Point2D): T? {
+    return getOrNull(p.y, p.x)
+}
+
+fun <T> Array<Array<T>>.set(i: Int, j: Int, value: T): Boolean {
+    val a = getOrNull(i) ?: return false
+    if (j in a.indices) {
+        a[j] = value
+        return true
+    }
+    return false
+}
+
+operator fun <T> Array<Array<T>>.set(p: Point2D, value: T): Boolean {
+    return set(p.y, p.x, value)
+}
+
+inline fun <reified T> Array<Array<T>>.deepCopy(): Array<Array<T>> {
+    return Array(this.size) {
+        this[it].copyOf()
+    }
+}
+
+fun <T> Array<Array<T>>.positions() = sequence {
+    val arr = this@positions
+    for (y in arr.indices) {
+        for (x in arr.first().indices) {
+            yield(Point2D(x, y))
+        }
+    }
+}
