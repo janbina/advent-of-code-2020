@@ -107,3 +107,11 @@ fun <T> Array<Array<T>>.positions() = sequence {
         }
     }
 }
+
+fun Long.setBit(index: Int): Long {
+    return this or (1L shl index)
+}
+
+fun Long.unsetBit(index: Int): Long {
+    return this and (1L shl index).inv()
+}

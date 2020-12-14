@@ -14,8 +14,9 @@ fun main() {
 class Day13(inputLines: List<String>) {
 
     private val earliest = inputLines.first().toInt()
-    private val ids = inputLines[1].split(",").filter { it != "x" }.map { it.toInt() }
-    private val offsets = inputLines[1].split(",").withIndex().filter { it.value != "x" }.map { it.index }
+    private val mapped = inputLines[1].split(",").withIndex().filter { it.value != "x" }
+    private val ids = mapped.map { it.value.toInt() }
+    private val offsets = mapped.map { it.index }
 
     fun part1(): Int {
         val departures = ids.map {
