@@ -115,3 +115,22 @@ fun Long.setBit(index: Int): Long {
 fun Long.unsetBit(index: Int): Long {
     return this and (1L shl index).inv()
 }
+
+fun Iterable<Int>.product(): Long {
+    if (!this.any()) return 0
+    var product = 1L
+    for (element in this) {
+        product *= element
+    }
+    return product
+}
+
+@JvmName("productLong")
+fun Iterable<Long>.product(): Long {
+    if (!this.any()) return 0
+    var product = 1L
+    for (element in this) {
+        product *= element
+    }
+    return product
+}
