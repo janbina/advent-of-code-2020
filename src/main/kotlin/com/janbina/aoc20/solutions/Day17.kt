@@ -11,114 +11,75 @@ fun main() {
     }
 }
 
-class Day17(
-    private val inputLines: List<String>
-) {
+class Day17(inputLines: List<String>) {
+
+    private val input = inputLines.mapIndexed { x, line ->
+        line.mapIndexed { y, c ->
+            if (c == '#') {
+                Point4D(x, y, 0, 0)
+            } else null
+        }.filterNotNull()
+    }.flatten().toSet()
 
     fun part1(): Int {
-        var map = mutableMapOf<Point3D, Boolean>()
-
-        inputLines.forEachIndexed { x, line ->
-            line.forEachIndexed { y, c ->
-                if (c == '#') {
-                    map[Point3D(x, y, 0)] = true
-                }
-            }
-        }
-
-        repeat(6) {
-            val newMap = mutableMapOf<Point3D, Boolean>()
-
-            map.keys.map { it.adjacent() + it }.flatten().distinct().forEach {
-                val activeAdjacent = it.adjacent().map { map[it] }.count { it == true }
-                if (map[it] == true && activeAdjacent in 2..3) {
-                    newMap[it] = true
-                } else if (map[it] != true && activeAdjacent == 3) {
-                    newMap[it] = true
-                }
-            }
-            map = newMap
-        }
-
-        return map.count { it.value }
+        return bootUp(Point4D::adjacent3D)
     }
 
     fun part2(): Int {
-        var map = mutableMapOf<Point4D, Boolean>()
-
-        inputLines.forEachIndexed { x, line ->
-            line.forEachIndexed { y, c ->
-                if (c == '#') {
-                    map[Point4D(x, y, 0, 0)] = true
-                }
-            }
-        }
-
-        repeat(6) {
-            val newMap = mutableMapOf<Point4D, Boolean>()
-
-            map.keys.map { it.adjacent() + it }.flatten().distinct().forEach {
-                val activeAdjacent = it.adjacent().map { map[it] }.count { it == true }
-                if (map[it] == true && activeAdjacent in 2..3) {
-                    newMap[it] = true
-                } else if (map[it] != true && activeAdjacent == 3) {
-                    newMap[it] = true
-                }
-            }
-            map = newMap
-        }
-
-        return map.count { it.value }
+        return bootUp(Point4D::adjacent4D)
     }
 
-    private data class Point3D(
-        val x: Int,
-        val y: Int,
-        val z: Int,
-    ) {
+    private fun bootUp(adjacentFunc: (Point4D) -> List<Point4D>): Int {
+        var set = input
 
-        fun adjacent(): List<Point3D> {
-            val list = ArrayList<Point3D>(26)
+        repeat(6) {
+            val newSet = mutableSetOf<Point4D>()
 
-            for (i in x-1..x+1) {
-                for (j in y-1..y+1) {
-                    for (k in z-1..z+1) {
-                        if (i != x || j != y || k != z) {
-                            list.add(Point3D(i, j, k))
+            set.map { adjacentFunc(it) + it }.flatten().distinct().forEach { candidate ->
+                val activeAdjacent = adjacentFunc(candidate).count { set.contains(it) }
+                if (set.contains(candidate) && activeAdjacent in 2..3) {
+                    newSet.add(candidate)
+                }
+                if (set.contains(candidate).not() && activeAdjacent == 3) {
+                    newSet.add(candidate)
+                }
+            }
+            
+            set = newSet
+        }
+
+        return set.size
+    }
+
+    private data class Point4D(val a: Int, val b: Int, val c: Int, val d: Int) {
+        fun adjacent3D(): List<Point4D> {
+            val list = ArrayList<Point4D>(80)
+            for (i in a-1..a+1) {
+                for (j in b-1..b+1) {
+                    for (k in c-1..c+1) {
+                        if (i != a || j != b || k != c) {
+                            list.add(Point4D(i, j, k, 0))
                         }
                     }
                 }
             }
-
             return list
         }
 
-    }
-
-    private data class Point4D(
-        val x: Int,
-        val y: Int,
-        val z: Int,
-        val w: Int,
-    ) {
-
-        fun adjacent(): List<Point4D> {
+        fun adjacent4D(): List<Point4D> {
             val list = ArrayList<Point4D>(80)
-
-            for (i in x-1..x+1) {
-                for (j in y-1..y+1) {
-                    for (k in z-1..z+1) {
-                        for (l in w-1..w+1) {
-                            if (i != x || j != y || k != z || l != w) {
+            for (i in a-1..a+1) {
+                for (j in b-1..b+1) {
+                    for (k in c-1..c+1) {
+                        for (l in d-1..d+1) {
+                            if (i != a || j != b || k != c || l != d) {
                                 list.add(Point4D(i, j, k, l))
                             }
                         }
                     }
                 }
             }
-
             return list
         }
-
     }
 }
