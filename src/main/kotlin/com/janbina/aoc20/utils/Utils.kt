@@ -134,3 +134,24 @@ fun Iterable<Long>.product(): Long {
     }
     return product
 }
+
+fun <K, V> Map<K, V>.getOrErr(key: K): V {
+    return get(key) ?: error("Key $key is not in map")
+}
+
+fun Sequence<Int>.product(): Long {
+    var product = 1L
+    for (element in this) {
+        product *= element
+    }
+    return product
+}
+
+@JvmName("productLong")
+fun Sequence<Long>.product(): Long {
+    var product = 1L
+    for (element in this) {
+        product *= element
+    }
+    return product
+}
